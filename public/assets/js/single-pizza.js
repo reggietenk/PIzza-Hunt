@@ -17,8 +17,9 @@ function getPizza() {
   // get pizzaInfo
   fetch(`/api/pizzas/${pizzaId}`)
     .then(response => {
-      // check for a 4xx or 5xx error from server
+      console.log(response);
       if (!response.ok) {
+        console.log('hi');
         throw new Error({ message: 'Something went wrong!' });
       }
 
@@ -110,7 +111,7 @@ function handleNewCommentSubmit(event) {
   }
 
   const formData = { commentBody, writtenBy };
-  
+
   fetch(`/api/comments/${pizzaId}`, {
     method: 'POST',
     headers: {
@@ -127,7 +128,7 @@ function handleNewCommentSubmit(event) {
     })
     .then(commentResponse => {
       console.log(commentResponse);
-      location.reload();
+      // location.reload();
     })
     .catch(err => {
       console.log(err);
@@ -151,6 +152,28 @@ function handleNewReplySubmit(event) {
   }
 
   const formData = { writtenBy, replyBody };
+
+  fetch(`/api/comments/${pizzaId}/${commentId}`, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(formData)
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Something went wrong!');
+      }
+      response.json();
+    })
+    .then(commentResponse => {
+      console.log(commentResponse);
+      location.reload();
+    })
+    .catch(err => {
+      console.log(err);
+    });
 }
 
 $backBtn.addEventListener('click', function() {
@@ -159,3 +182,5 @@ $backBtn.addEventListener('click', function() {
 
 $newCommentForm.addEventListener('submit', handleNewCommentSubmit);
 $commentSection.addEventListener('submit', handleNewReplySubmit);
+
+getPizza();
